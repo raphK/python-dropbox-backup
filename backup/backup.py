@@ -58,6 +58,13 @@ class BackupUtils:
             stdout.write('Error: %s\n' % str(e))    
         self.api_client = client.DropboxClient(self.sess)
 
+    def ensure_dir(self, path):
+        try:
+            os.makedirs(path)
+        except OSError as exception:
+            if exception.errno != errno.EEXIST:
+                raise
+
     def download_file(self, from_path, to_path):
         """Copy file from Dropbox to local file."""
         to_file = open(os.path.expanduser(to_path), "wb")
