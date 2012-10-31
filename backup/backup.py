@@ -30,7 +30,7 @@ class StoredSession(session.DropboxSession):
             stored_creds = open(self.TOKEN_FILE).read()
             self.set_token(*stored_creds.split('|'))
             print "[loaded access token]"
-        except IOError:
+        except:
             # otherwise try to get new access token
             request_token = self.obtain_request_token()
             url = self.build_authorize_url(request_token)
