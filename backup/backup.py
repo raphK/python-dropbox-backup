@@ -3,6 +3,7 @@ import locale
 import os
 import pprint
 import shlex
+import errno
 
 from dropbox import client, rest, session
 
