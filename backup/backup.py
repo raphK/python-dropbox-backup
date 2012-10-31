@@ -49,7 +49,6 @@ class BackupUtils:
     """a wrapper around DropboxSession that stores a token to a file on disk"""
 
     def __init__(self):
-        self.current_path = ''
         if APP_KEY == '' or APP_SECRET == '':
             exit("You need to set your APP_KEY and APP_SECRET!")
         self.sess = StoredSession(APP_KEY, APP_SECRET, ACCESS_TYPE)
@@ -59,26 +58,47 @@ class BackupUtils:
             stdout.write('Error: %s\n' % str(e))    
         self.api_client = client.DropboxClient(self.sess)
 
-    def list_folder(self):
-        resp = self.api_client.metadata(self.current_path)
+    def download_file(self, from_path, to_path):
+        """Copy file from Dropbox to local file."""
+        to_file = open(os.path.expanduser(to_path), "wb")
+
+        f = self.api_client.get_file(from_path)
+        to_file.write(f.read())        
+
+    def list_folder(self, folderPath):
+
+        print '# LISTING: %s' % folderPath
+        resp = self.api_client.metadata(folderPath)
 
         if 'contents' in resp:
             for f in resp['contents']:
                 name = os.path.basename(f['path'])
                 encoding = locale.getdefaultlocale()[1]
-                print ('%s\n' % name).encode(encoding)
+                if f['is_dir']:                
+                    print ('[D] %s' % name).encode(encoding)
+                else:
+                    print ('[F] %s' % name).encode(encoding)
 
-    def do_get(self, from_path, to_path):
-        """Copy file from Dropbox to local file."""
-        to_file = open(os.path.expanduser(to_path), "wb")
+    def download_folder(self, folderPath):
 
-        f = self.api_client.get_file(self.current_path + "/" + from_path)
-        to_file.write(f.read())
+        print '# PROCESSING: %s' % folderPath
+        resp = self.api_client.metadata(folderPath)
+
+        if 'contents' in resp:
+            for f in resp['contents']:
+                name = os.path.basename(f['path'])
+                encoding = locale.getdefaultlocale()[1]
+                if f['is_dir']:                
+                    print ('[D] %s' % name).encode(encoding)
+                else:
+                    print ('[F] %s' % name).encode(encoding)          
+
+    def backup_dropbox(self):
+        self.download_folder('/')
 
 def main():
     backup_client = BackupUtils()
-    backup_client.list_folder()
-    backup_client.do_get('Subscriptions-i42n.opml', 'Subscriptions-i42n.opml')
+    backup_client.backup_dropbox()
 
 if __name__ == '__main__':
     main()
