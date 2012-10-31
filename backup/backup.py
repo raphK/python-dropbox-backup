@@ -71,7 +71,7 @@ class BackupUtils:
         # path to file
         file_path = os.path.expanduser(to_path)
         # directory that may have to be created
-        dir_path = ''.join(file_path.split("/")[0:-1])
+        (dir_path, tail) = os.path.split(to_path)
         self.ensure_dir(dir_path) # create if it does not exist
         # open the file to write to
         to_file = open(file_path, "wb")
