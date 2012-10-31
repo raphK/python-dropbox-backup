@@ -104,15 +104,19 @@ class BackupUtils:
                 encoding = locale.getdefaultlocale()[1]
                 if f['is_dir']:                
                     print ('[D] %s' % name).encode(encoding)
+                    # do recursion to also download this folder
+                    download_folder(folderPath + name)
                 else:
-                    print ('[F] %s' % name).encode(encoding)          
+                    print ('[F] %s' % name).encode(encoding)
+                    # download the file
+                    download_file(folderPath + name, folderPath)
 
     def backup_dropbox(self):
-        self.download_folder('/')
+        self.download_folder('')
 
 def main():
     backup_client = BackupUtils()
-    backup_client.backup_dropbox()
+    backup_client.download_file('Subscriptions-i42n.opml', 'foobar/Subscriptions-i42n.opml')
 
 if __name__ == '__main__':
     main()
