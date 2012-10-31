@@ -67,7 +67,13 @@ class BackupUtils:
 
     def download_file(self, from_path, to_path):
         """Copy file from Dropbox to local file."""
-        to_file = open(os.path.expanduser(to_path), "wb")
+        # path to file
+        file_path = os.path.expanduser(to_path)
+        # directory that may have to be created
+        dir_path = ''.join(file_path.split("/")[0:-1])
+        self.ensure_dir(dir_path) # create if it does not exist
+        # open the file to write to
+        to_file = open(file_path, "wb")
 
         f = self.api_client.get_file(from_path)
         to_file.write(f.read())        
