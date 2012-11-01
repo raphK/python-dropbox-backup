@@ -7,7 +7,7 @@ import errno
 
 from dropbox import client, rest, session
 
-# XXX Fill in your consumer key and secret below
+# Fill in your consumer key and secret below
 # You can find these at http://www.dropbox.com/developers/apps
 APP_KEY = ''
 APP_SECRET = ''
@@ -47,7 +47,7 @@ class StoredSession(session.DropboxSession):
         session.DropboxSession.unlink(self)
 
 class BackupUtils:
-    """a wrapper around DropboxSession that stores a token to a file on disk"""
+    """a tool collection to do a recursive download of the whole dropbox for backup usage"""
 
     def __init__(self):
         if APP_KEY == '' or APP_SECRET == '':
