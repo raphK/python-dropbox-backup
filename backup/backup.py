@@ -86,7 +86,6 @@ class BackupUtils:
         to_file.write(f.read())        
 
     def list_folder(self, folderPath):
-
         print '# LISTING: %s' % folderPath
         resp = self.api_client.metadata(folderPath)
 
@@ -100,7 +99,6 @@ class BackupUtils:
                     print ('[F] %s' % name).encode(encoding)
 
     def download_folder(self, folderPath):
-
         print '# PROCESSING: %s' % folderPath
         resp = self.api_client.metadata(folderPath)
 
