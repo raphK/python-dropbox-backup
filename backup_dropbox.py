@@ -76,12 +76,11 @@ class BackupUtils:
 
     def download_file(self, from_path, to_path):
         """Copy file from Dropbox to local file."""
-        print 'Downloading %s to %s' % (from_path, to_path)
+        print 'Downloading %s' % from_path
         # path to file
         file_path = os.path.expanduser(to_path)
         # directory that may have to be created
         (dir_path, tail) = os.path.split(to_path)
-        #print '%s' % dir_path
         self.ensure_dir(dir_path) # create if it does not exist
         # open the file to write to
         to_file = open(file_path, "wb")
@@ -103,20 +102,16 @@ class BackupUtils:
                     print ('[F] %s' % name).encode(encoding)
 
     def download_folder(self, folderPath):
-        #print '# PROCESSING: %s' % folderPath
         resp = self.api_client.metadata(folderPath)
 
         if 'contents' in resp:
             for f in resp['contents']:
                 name = os.path.basename(f['path'])
-                #encoding = locale.getdefaultlocale()[1]
                 complete_path = os.path.join(folderPath, name)
                 if f['is_dir']:                
-                    #print ('[D] %s' % name).encode(encoding)
                     # do recursion to also download this folder
                     self.download_folder(complete_path)
                 else:
-                    #print ('[F] %s' % name).encode(encoding)
                     # download the file
                     self.download_file(complete_path, os.path.join(self.backup_folder_name, complete_path))
 
