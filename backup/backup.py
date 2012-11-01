@@ -73,7 +73,7 @@ class BackupUtils:
         file_path = os.path.expanduser(to_path)
         # directory that may have to be created
         (dir_path, tail) = os.path.split(to_path)
-        print '%s' % dir_path
+        #print '%s' % dir_path
         self.ensure_dir(dir_path) # create if it does not exist
         # open the file to write to
         to_file = open(file_path, "wb")
@@ -103,14 +103,14 @@ class BackupUtils:
         if 'contents' in resp:
             for f in resp['contents']:
                 name = os.path.basename(f['path'])
-                encoding = locale.getdefaultlocale()[1]
+                #encoding = locale.getdefaultlocale()[1]
                 complete_path = os.path.join(folderPath, name)
                 if f['is_dir']:                
-                    print ('[D] %s' % name).encode(encoding)
+                    #print ('[D] %s' % name).encode(encoding)
                     # do recursion to also download this folder
                     self.download_folder(complete_path)
                 else:
-                    print ('[F] %s' % name).encode(encoding)
+                    #print ('[F] %s' % name).encode(encoding)
                     # download the file
                     self.download_file(complete_path, complete_path)
 
