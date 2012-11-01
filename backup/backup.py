@@ -4,6 +4,7 @@ import os
 import pprint
 import shlex
 import errno
+import datetime
 
 from dropbox import client, rest, session
 
@@ -58,6 +59,9 @@ class BackupUtils:
         except rest.ErrorResponse, e:
             stdout.write('Error: %s\n' % str(e))    
         self.api_client = client.DropboxClient(self.sess)
+        now = datetime.datetime.now()
+        date_string = now.strftime('%Y-%m-%d_%H:%M')
+        self.backup_folder_name = 'dropbox_backup_' + date_string
 
     def ensure_dir(self, path):
         # check if there is actually a folder that has to be created
@@ -114,7 +118,7 @@ class BackupUtils:
                 else:
                     #print ('[F] %s' % name).encode(encoding)
                     # download the file
-                    self.download_file(complete_path, complete_path)
+                    self.download_file(complete_path, os.path.join(self.backup_folder_name, complete_path))
 
     def backup_dropbox(self):
         self.download_folder('')
