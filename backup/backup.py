@@ -103,7 +103,7 @@ class BackupUtils:
                     print ('[F] %s' % name).encode(encoding)
 
     def download_folder(self, folderPath):
-        print '# PROCESSING: %s' % folderPath
+        #print '# PROCESSING: %s' % folderPath
         resp = self.api_client.metadata(folderPath)
 
         if 'contents' in resp:
