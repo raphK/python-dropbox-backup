@@ -60,11 +60,15 @@ class BackupUtils:
         self.api_client = client.DropboxClient(self.sess)
 
     def ensure_dir(self, path):
-        try:
-            os.makedirs(path)
-        except OSError as exception:
-            if exception.errno != errno.EEXIST:
-                raise
+        # check if there is actually a folder that has to be created
+        if path != '':
+            try:
+                # try to create it
+                os.makedirs(path)
+            except OSError as exception:
+                # raise all errors except of the error that shows us that the dir already exists already
+                if exception.errno != errno.EEXIST:
+                    raise
 
     def download_file(self, from_path, to_path):
         """Copy file from Dropbox to local file."""
