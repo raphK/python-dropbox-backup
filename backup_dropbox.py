@@ -60,7 +60,7 @@ class BackupUtils:
             stdout.write('Error: %s\n' % str(e))    
         self.api_client = client.DropboxClient(self.sess)
         now = datetime.datetime.now()
-        date_string = now.strftime('%Y-%m-%d_%H:%M')
+        date_string = now.strftime('%Y-%m-%d_%H-%M')
         self.backup_folder_name = 'dropbox_backup_' + date_string
 
     def ensure_dir(self, path):
