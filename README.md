@@ -31,8 +31,8 @@ You're done! The script will now create a new folder with the current date and d
 
 ## What will be done in the future?
 
-* interactive APPKEY setting
-* store APPKEY in keystore too
+* interactive APPKEY and APPSECRET setup when external file not found. Use simple json format
+* store the keys that where added in a seperate file (can also be edited manually)
 * easy setup with setuptools
 
 ## Feature requests?
