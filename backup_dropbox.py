@@ -140,7 +140,7 @@ class BackupUtils():
                 f = self.api_client.get_file(from_path)
                 to_file.write(f.read())
                 return
-            except dropbox.rest.ErrorResponse:
+            except rest.ErrorResponse:
                 print 'An error occured while downloading. Will try again in some seconds.'
                 logging.debug('An error occured while downloading. Will try again in some seconds.')
                 sleep(attempts*1000+500)
