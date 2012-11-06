@@ -28,6 +28,7 @@ class KeyStorage():
     def write_keystore(self):
         with open(self.KEY_FILE, 'w') as output:
             json.dump(self.keystore, output)
+            print 'new keystore saved]'
 
     def load_keystore(self):
         with open(self.KEY_FILE, 'r') as input:
