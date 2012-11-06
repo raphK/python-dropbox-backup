@@ -9,7 +9,6 @@ import json
 
 from dropbox import client, rest, session
 
-TOKEN_FILE = "token_store.txt"
 ACCESS_TYPE = 'dropbox'  # should be 'dropbox' or 'app_folder' as configured for your app
 
 class KeyStorage():
@@ -54,15 +53,17 @@ class KeyStorage():
 class StoredSession(session.DropboxSession):
     """a wrapper around DropboxSession that stores a token to a file on disk"""
 
+    TOKEN_FILE = "token_store.txt"
+
     def write_creds(self, token):
-        f = open(TOKEN_FILE, 'w')
+        f = open(self.TOKEN_FILE, 'w')
         f.write("|".join([token.key, token.secret]))
         f.close()
 
     def link(self):
         try:
             # first try to load stored access token
-            stored_creds = open(TOKEN_FILE).read()
+            stored_creds = open(self.TOKEN_FILE).read()
             self.set_token(*stored_creds.split('|'))
             print '[loaded access token]'
         except:
