@@ -102,8 +102,9 @@ class BackupUtils():
         try:
             self.sess.link()
         except rest.ErrorResponse, e:
-            # TODO exit here
             print 'Error. Connection to Dropbox could not be established: %s\n' % str(e)
+            logging.debug('Error. Connection to Dropbox could not be established: %s\n', str(e))
+            return # exit backup process - without connection with dropbox that can not work
         self.api_client = client.DropboxClient(self.sess)
         now = datetime.datetime.now()
         date_string = now.strftime('%Y-%m-%d_%H-%M')
