@@ -132,6 +132,7 @@ class BackupUtils():
                 to_file.write(f.read())
                 return
             except dropbox.rest.ErrorResponse:
+                print 'An error occured while downloading. Will try again in some seconds.'
                 sleep(attempts*1000+500)
 
     def list_folder(self, folderPath):
