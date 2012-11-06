@@ -56,16 +56,20 @@ class StoredSession(session.DropboxSession):
 
     TOKEN_FILE = "token_store.txt"
 
-    def write_creds(self, token):
-        f = open(self.TOKEN_FILE, 'w')
-        f.write("|".join([token.key, token.secret]))
-        f.close()
+    def write_tokenstore(self):
+        with open(self.TOKEN_FILE, 'w') as output:
+            json.dump(self.keystore, output)
+            print '[new tokenstore saved]'
+
+    def load_tokenstore(self):
+        with open(self.TOKEN_FILE, 'r') as input:
+            self.keystore = json.load(input)
 
     def link(self):
         try:
             # first try to load stored access token
-            stored_creds = open(self.TOKEN_FILE).read()
-            self.set_token(*stored_creds.split('|'))
+            self.load_tokenstore()
+            self.set_token(self.keystore['key'], self.keystore['secret'])
             print '[loaded access token]'
         except:
             # otherwise try to get new access token
@@ -76,7 +80,10 @@ class StoredSession(session.DropboxSession):
             raw_input()
 
             self.obtain_access_token(request_token)
-            self.write_creds(self.token)
+            self.keystore = json.loads('{ "key":"", "secret":"" }') # create json data structure to fill new data in
+            self.keystore['key'] = self.token.key
+            self.keystore['secret'] = self.token.secret
+            self.write_tokenstore()
 
 class BackupUtils():
     """a tool collection to do a recursive download of the whole dropbox for backup usage""" 
