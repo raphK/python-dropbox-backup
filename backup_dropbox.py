@@ -7,6 +7,7 @@ import errno
 import datetime
 import json
 import time
+import logging
 
 from dropbox import client, rest, session
 from dropbox.rest import ErrorResponse
@@ -22,6 +23,7 @@ class KeyStorage():
         try:
             self.load_keystore()
             print '[loaded appkey and appsecret]'
+            logging.debug('[loaded appkey and appsecret]')
         except (IOError, ValueError):
             self.read_appkey_from_user()
         while self.keystore['appkey'] == '' or self.keystore['appsecret'] == '':
@@ -31,6 +33,7 @@ class KeyStorage():
         with open(self.KEY_FILE, 'w') as output:
             json.dump(self.keystore, output)
             print 'new keystore saved]'
+            logging.debug('new keystore saved]')
 
     def load_keystore(self):
         with open(self.KEY_FILE, 'r') as input:
@@ -62,6 +65,7 @@ class StoredSession(session.DropboxSession):
         with open(self.TOKEN_FILE, 'w') as output:
             json.dump(self.keystore, output)
             print '[new tokenstore saved]'
+            logging.debug('[new tokenstore saved]')
 
     def load_tokenstore(self):
         with open(self.TOKEN_FILE, 'r') as input:
@@ -74,6 +78,7 @@ class StoredSession(session.DropboxSession):
             self.load_tokenstore()
             self.set_token(self.keystore['key'], self.keystore['secret'])
             print '[loaded access token]'
+            logging.debug('[loaded access token]')
         except:
             # otherwise try to get new access token
             request_token = self.obtain_request_token()
@@ -119,6 +124,7 @@ class BackupUtils():
     def download_file(self, from_path, to_path):
         """Copy file from Dropbox to local file."""
         print 'Downloading %s' % from_path
+        logging.debug('Downloading %s', from_path)
         # path to file
         file_path = os.path.expanduser(to_path)
         # directory that may have to be created
@@ -135,6 +141,7 @@ class BackupUtils():
                 return
             except dropbox.rest.ErrorResponse:
                 print 'An error occured while downloading. Will try again in some seconds.'
+                logging.debug('An error occured while downloading. Will try again in some seconds.')
                 sleep(attempts*1000+500)
 
     def list_folder(self, folderPath):
@@ -152,6 +159,7 @@ class BackupUtils():
                     print ('[F] %s' % name).encode(encoding)
 
     def download_folder(self, folderPath):
+        """download a given dropbox folder recursively"""
         resp = self.api_client.metadata(folderPath)
 
         if 'contents' in resp:
@@ -170,8 +178,17 @@ class BackupUtils():
         self.download_folder('')
 
 def main():
+    init_logging()
     backup_client = BackupUtils()
     backup_client.backup_dropbox()
+
+
+def init_logging():
+    """setup logfile name"""
+    now = datetime.datetime.now()
+    date_string = now.strftime('%Y-%m-%d_%H-%M')
+    logfile_name = 'dropbox_backup_' + date_string + '.log'
+    logging.basicConfig(filename=logfile_name,level=logging.DEBUG)    
 
 if __name__ == '__main__':
     main()
