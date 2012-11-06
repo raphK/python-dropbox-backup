@@ -37,7 +37,7 @@ class KeyStorage():
     def read_appkey_from_user(self):
         # it is not set yet, so read in from user
         print 'You need to set your APP_KEY and APP_SECRET!\nYou can find these at http://www.dropbox.com/developers/apps'
-        self.keystore = json.loads('{ "appkey":"", "appsecret":"" }')
+        self.keystore = json.loads('{ "appkey":"", "appsecret":"" }') # create json data structure to fill new data in
         print 'APPKEY:'
         self.keystore['appkey'] = raw_input()
         print 'APPSECRET:'
