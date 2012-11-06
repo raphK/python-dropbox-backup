@@ -10,8 +10,46 @@ import json
 from dropbox import client, rest, session
 
 TOKEN_FILE = "token_store.txt"
-KEY_FILE = "appkey_store.txt"
 ACCESS_TYPE = 'dropbox'  # should be 'dropbox' or 'app_folder' as configured for your app
+
+class KeyStorage():
+
+    KEY_FILE = "appkey_store.txt"
+
+    def __init__(self):
+        # try to read appkey and appsecret from previously stored settings file
+        try:
+            self.load_keystore()
+            print '[loaded appkey and appsecret]'
+        except (IOError, ValueError):
+            self.read_appkey_from_user()
+        while self.keystore['appkey'] == '' or self.keystore['appsecret'] == '':
+            self.read_appkey_from_user()        
+
+    def write_keystore(self):
+        with open(self.KEY_FILE, 'w') as output:
+            json.dump(self.keystore, output)
+
+    def load_keystore(self):
+        with open(self.KEY_FILE, 'r') as input:
+            self.keystore = json.load(input)
+
+    def read_appkey_from_user(self):
+        # it is not set yet, so read in from user
+        print 'You need to set your APP_KEY and APP_SECRET!\nYou can find these at http://www.dropbox.com/developers/apps'
+        self.keystore = json.loads('{ "appkey":"", "appsecret":"" }')
+        print 'APPKEY:'
+        self.keystore['appkey'] = raw_input()
+        print 'APPSECRET:'
+        self.keystore['appsecret'] = raw_input()
+        # now store that data for later usage
+        self.write_keystore()  
+
+    def get_appkey(self):
+        return self.keystore['appkey']
+
+    def get_appsecret(self):
+        return self.keystore['appsecret']
 
 class StoredSession(session.DropboxSession):
     """a wrapper around DropboxSession that stores a token to a file on disk"""
@@ -45,38 +83,12 @@ class StoredSession(session.DropboxSession):
         self.delete_creds()
         session.DropboxSession.unlink(self)
 
-class BackupUtils:
-    """a tool collection to do a recursive download of the whole dropbox for backup usage"""
-
-    def write_keystore(self):
-        with open(KEY_FILE, 'w') as output:
-            json.dump(self.keystore, output)
-
-    def load_keystore(self):
-        with open(KEY_FILE, 'r') as input:
-            self.keystore = json.load(input)  
-
-    def read_appkey_from_user(self):
-        # it is not set yet, so read in from user
-        print 'You need to set your APP_KEY and APP_SECRET!\nYou can find these at http://www.dropbox.com/developers/apps'
-        self.keystore = json.loads('{ "appkey":"", "appsecret":"" }')
-        print 'APPKEY:'
-        self.keystore['appkey'] = raw_input()
-        print 'APPSECRET:'
-        self.keystore['appsecret'] = raw_input()
-        # now store that data for later usage
-        self.write_keystore()  
+class BackupUtils():
+    """a tool collection to do a recursive download of the whole dropbox for backup usage""" 
 
     def __init__(self):
-        # try to read appkey and appsecret from previously stored settings file
-        try:
-            self.load_keystore()
-            print '[loaded appkey and appsecret]'
-        except (IOError, ValueError):
-            self.read_appkey_from_user()
-        while self.keystore['appkey'] == '' or self.keystore['appsecret'] == '':
-            self.read_appkey_from_user()
-        self.sess = StoredSession(self.keystore['appkey'], self.keystore['appsecret'], ACCESS_TYPE)
+        key_storage = KeyStorage()
+        self.sess = StoredSession(key_storage.get_appkey(), key_storage.get_appsecret(), ACCESS_TYPE)
         try:
             self.sess.link()
         except rest.ErrorResponse, e:
