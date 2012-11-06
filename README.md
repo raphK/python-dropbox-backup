@@ -27,6 +27,8 @@ If you have done that you will be asked to open an URL in your browser to grant 
 
 You only have to do all this for the first time. All keys will be stored in a keyfile. If you need to do changes to this data later either edit the files manually or remove the file and run through the setup process of the script again.
 
+_Please note:_ The keystorage file format changed (and will change) several times as this part is under heavy developement right now. If you experience problems with your old keystorage files, please delete them and run again through the setup process. That will generate the keystorage files with the current format.
+
 You're done! The script will now create a new folder with the current date and download the whole dropbox into that folder. Time to get a coffee ;)
 
 ## What will be done in the future?
