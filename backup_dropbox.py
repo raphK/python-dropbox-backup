@@ -143,7 +143,7 @@ class BackupUtils():
             except rest.ErrorResponse:
                 print 'An error occured while downloading. Will try again in some seconds.'
                 logging.debug('An error occured while downloading. Will try again in some seconds.')
-                sleep(attempts*1000+500)
+                time.sleep(attempts*10+5)
 
     def list_folder(self, folderPath):
         """list a given directory on dropbox"""
