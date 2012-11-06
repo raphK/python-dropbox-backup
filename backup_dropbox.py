@@ -68,6 +68,7 @@ class StoredSession(session.DropboxSession):
             self.keystore = json.load(input)
 
     def link(self):
+        """establish link with dropbox"""
         try:
             # first try to load stored access token
             self.load_tokenstore()
@@ -104,6 +105,7 @@ class BackupUtils():
         self.backup_folder_name = 'dropbox_backup_' + date_string
 
     def ensure_dir(self, path):
+        """ensure that the given path exists in local filesystem. if not create the directory"""
         # check if there is actually a folder that has to be created
         if path != '':
             try:
@@ -136,6 +138,7 @@ class BackupUtils():
                 sleep(attempts*1000+500)
 
     def list_folder(self, folderPath):
+        """list a given directory on dropbox"""
         print '# LISTING: %s' % folderPath
         resp = self.api_client.metadata(folderPath)
 
@@ -163,6 +166,7 @@ class BackupUtils():
                     self.download_file(complete_path, os.path.join(self.backup_folder_name, complete_path))
 
     def backup_dropbox(self):
+        """backup the whole dropbox recursively"""
         self.download_folder('')
 
 def main():
