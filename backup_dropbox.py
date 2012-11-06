@@ -6,8 +6,10 @@ import shlex
 import errno
 import datetime
 import json
+import time
 
 from dropbox import client, rest, session
+from dropbox.rest import ErrorResponse
 
 ACCESS_TYPE = 'dropbox'  # should be 'dropbox' or 'app_folder' as configured for your app
 
@@ -123,8 +125,14 @@ class BackupUtils():
         # open the file to write to
         to_file = open(file_path, "wb")
 
-        f = self.api_client.get_file(from_path)
-        to_file.write(f.read())        
+        # try to download 5 times to handle http 5xx errors from dropbox
+        for attempts in range(5):
+            try:
+                f = self.api_client.get_file(from_path)
+                to_file.write(f.read())
+                return
+            except dropbox.rest.ErrorResponse:
+                sleep(attempts*1000+500)
 
     def list_folder(self, folderPath):
         print '# LISTING: %s' % folderPath
