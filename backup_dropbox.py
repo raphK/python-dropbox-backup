@@ -59,9 +59,6 @@ class StoredSession(session.DropboxSession):
         f.write("|".join([token.key, token.secret]))
         f.close()
 
-    def delete_creds(self):
-        os.unlink(TOKEN_FILE)
-
     def link(self):
         try:
             # first try to load stored access token
@@ -78,10 +75,6 @@ class StoredSession(session.DropboxSession):
 
             self.obtain_access_token(request_token)
             self.write_creds(self.token)
-
-    def unlink(self):
-        self.delete_creds()
-        session.DropboxSession.unlink(self)
 
 class BackupUtils():
     """a tool collection to do a recursive download of the whole dropbox for backup usage""" 
