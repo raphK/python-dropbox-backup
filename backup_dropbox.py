@@ -161,18 +161,28 @@ class BackupUtils():
 
     def download_folder(self, folderPath):
         """download a given dropbox folder recursively"""
-        resp = self.api_client.metadata(folderPath)
 
-        if 'contents' in resp:
-            for f in resp['contents']:
-                name = os.path.basename(f['path'])
-                complete_path = os.path.join(folderPath, name)
-                if f['is_dir']:                
-                    # do recursion to also download this folder
-                    self.download_folder(complete_path)
+        # try to download 5 times to handle http 5xx errors from dropbox
+        for attempts in range(5):
+            try:
+                resp = self.api_client.metadata(folderPath)
+                # also ensure that response includes content
+                if 'contents' in resp:
+                    for f in resp['contents']:
+                        name = os.path.basename(f['path'])
+                        complete_path = os.path.join(folderPath, name)
+                        if f['is_dir']:            
+                            # do recursion to also download this folder
+                            self.download_folder(complete_path)
+                        else:
+                            # download the file
+                            self.download_file(complete_path, os.path.join(self.backup_folder_name, complete_path))
                 else:
-                    # download the file
-                    self.download_file(complete_path, os.path.join(self.backup_folder_name, complete_path))
+                    raise ValueError
+            except (rest.ErrorResponse, ValueError):
+                print 'An error occured while listing a directory. Will try again in some seconds.'
+                logging.debug('An error occured while listing a directory. Will try again in some seconds.')
+                time.sleep(attempts*10+5) # sleep some secs
 
     def backup_dropbox(self):
         """backup the whole dropbox recursively"""
