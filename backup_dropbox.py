@@ -11,6 +11,7 @@ import logging
 
 from dropbox import client, rest, session
 from dropbox.rest import ErrorResponse
+from dropbox.rest import RESTSocketError
 
 ACCESS_TYPE = 'dropbox'  # should be 'dropbox' or 'app_folder' as configured for your app
 
@@ -140,7 +141,7 @@ class BackupUtils():
                 f = self.api_client.get_file(from_path)
                 to_file.write(f.read())
                 return
-            except rest.ErrorResponse:
+            except (rest.ErrorResponse, rest.RESTSocketError):
                 print 'An error occured while downloading. Will try again in some seconds.'
                 logging.debug('An error occured while downloading. Will try again in some seconds.')
                 time.sleep(attempts*10+5) # sleep some secs
@@ -179,7 +180,7 @@ class BackupUtils():
                             self.download_file(complete_path, os.path.join(self.backup_folder_name, complete_path))
                 else:
                     raise ValueError
-            except (rest.ErrorResponse, ValueError):
+            except (rest.ErrorResponse, rest.RESTSocketError, ValueError):
                 print 'An error occured while listing a directory. Will try again in some seconds.'
                 logging.debug('An error occured while listing a directory. Will try again in some seconds.')
                 time.sleep(attempts*10+5) # sleep some secs
