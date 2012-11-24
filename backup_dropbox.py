@@ -141,9 +141,10 @@ class BackupUtils():
                 f = self.api_client.get_file(from_path)
                 to_file.write(f.read())
                 return
-            except (rest.ErrorResponse, rest.RESTSocketError):
+            except (rest.ErrorResponse, rest.RESTSocketError) as error:
                 print 'An error occured while downloading. Will try again in some seconds.'
                 logging.debug('An error occured while downloading. Will try again in some seconds.')
+                logging.debug('%s' % str(error))
                 time.sleep(attempts*10+5) # sleep some secs
 
     def list_folder(self, folderPath):
@@ -180,9 +181,10 @@ class BackupUtils():
                             self.download_file(complete_path, os.path.join(self.backup_folder_name, complete_path))
                 else:
                     raise ValueError
-            except (rest.ErrorResponse, rest.RESTSocketError, ValueError):
+            except (rest.ErrorResponse, rest.RESTSocketError, ValueError) as error:
                 print 'An error occured while listing a directory. Will try again in some seconds.'
                 logging.debug('An error occured while listing a directory. Will try again in some seconds.')
+                logging.debug('%s' % str(error))
                 time.sleep(attempts*10+5) # sleep some secs
 
     def backup_dropbox(self):
